@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV Charging Time Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif; /* Cleaner, modern font */
+      background: #f4f6f8; /* Light grey background */
+      padding: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align card to top */
+      min-height: 100vh; /* Ensure body takes full height */
+    }
+    .card {
+      background: white;
+      border-radius: 16px; /* Softer corners */
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+      padding: 2em;
+      max-width: 450px; /* Slightly wider for better spacing */
+      width: 100%;
+      box-sizing: border-box; /* Include padding in width */
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 1.5em; /* More space below title */
+      text-align: center;
+      color: #333; /* Darker heading color */
+    }
+    .form-group {
+      margin-bottom: 1.2em; /* Consistent spacing */
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5em; /* More space below label */
+      font-weight: 600; /* Slightly bolder labels */
+      color: #555; /* Grey label color */
+      font-size: 0.9em; /* Smaller label */
+    }
+    input[type="number"] { /* Specific styling for number inputs */
+      width: 100%;
+      padding: 0.8em; /* More padding */
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box; /* Include padding in width */
+      font-size: 1em;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+    input[type="number"]:focus {
+      border-color: #007bff; /* Highlight focus */
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Focus ring */
+      outline: none; /* Remove default outline */
+    }
+    input[type="number"]:disabled { /* Style for disabled inputs */
+        background-color: #e9ecef; /* Grey background */
+        cursor: not-allowed; /* Indicate disabled state */
+    }
+    .input-row {
+      display: flex;
+      gap: 1em; /* Space between items in the row */
+      align-items: flex-end; /* Align items to the bottom */
+    }
+    .input-row .form-group {
+      flex: 1; /* Make form groups take equal space */
+      margin-bottom: 0; /* Remove bottom margin within row */
+    }
+    button {
+      background: #007bff; /* Primary blue */
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em; /* Generous padding */
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1.1em; /* Larger font */
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5em; /* More space above button */
+      transition: background-color 0.2s ease-in-out; /* Smooth hover */
+    }
+    button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+    .result {
+      margin-top: 2em; /* More space above result */
+      padding: 1.2em;
+      background: #e9f7ef; /* Light green background */
+      border-left: 5px solid #28a745; /* Green accent border */
+      border-radius: 8px;
+      color: #155724; /* Dark green text */
+      line-height: 1.6; /* Better readability */
+    }
+    .result strong {
+        color: #004085; /* Slightly different color for emphasis */
+    }
+    #startTimer {
+      display: none; /* Hidden by default */
+      margin-top: 1em;
+      background: #28a745; /* Green color for start timer */
+    }
+     #startTimer:hover {
+        background-color: #1e7e34; /* Darker green on hover */
+    }
+    #timerDisplay {
+      font-size: 1.5em; /* Larger timer display */
+      margin-top: 1em;
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+    }
+    #endTimeDisplay {
+      font-size: 1em;
+      margin-top: 0.5em;
+      text-align: center;
+      color: #555; /* Grey text */
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>EV Charging Calculator</h2>
+
+    <div class="form-group">
+      <label for="battery">Battery Size (kWh)</label>
+      <input type="number" id="battery" min="1" value="54" step="0.1" />
+    </div>
+
+    <p style="font-size: 0.8em; color: #666; margin-top: -0.5em; margin-bottom: 1em;">Enter EITHER initial charge % OR initial kWh:</p>
+    <div class="input-row">
+      <div class="form-group">
+        <label for="percent">Initial Charge (%)</label>
+        <input type="number" id="percent" min="0" max="100" step="1" oninput="toggleInputs('percent')" />
+      </div>
+      <div class="form-group">
+        <label for="kwh">Initial Charge (kWh)</label>
+        <input type="number" id="kwh" min="0" step="0.1" oninput="toggleInputs('kwh')" />
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 1.2em;"> <!-- Add margin top after row -->
+      <label for="final">Target Charge (%)</label>
+      <input type="number" id="final" min="1" max="100" value="80" step="1" />
+    </div>
+
+    <div class="form-group">
+      <label for="charger">Charger Power (kW)</label> <!-- Corrected unit label -->
+      <input type="number" id="charger" min="0.1" step="0.1" placeholder="e.g., 7.4, 11, 50, 100" value="100" /> <!-- Added default and placeholder -->
+    </div>
+
+    <button onclick="calculateTime()">Calculate Time</button>
+    <button id="startTimer" onclick="startTimer()">Start Charging Timer</button>
+
+    <div id="timerDisplay"></div>
+    <div id="endTimeDisplay"></div>
+
+    <div id="result" class="result" style="display: none;"></div>
+
+    <!-- Alarm Sound -->
+    <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+  </div>
+
+  <script>
+    let countdown; // Variable to store the interval ID
+    let endTime; // Variable to store the calculated end time
+    let estimatedSeconds = 0; // Store total seconds for the timer
+
+    const batteryInput = document.getElementById('battery');
+    const percentInput = document.getElementById('percent');
+    const kwhInput = document.getElementById('kwh');
+    const finalInput = document.getElementById('final');
+    const chargerInput = document.getElementById('charger');
+    const resultDiv = document.getElementById('result');
+    const startTimerButton = document.getElementById('startTimer');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const endTimeDisplay = document.getElementById('endTimeDisplay');
+    const alarmSound = document.getElementById('alarmSound');
+
+    // Set max value for initial kWh input based on battery size
+    batteryInput.addEventListener('input', () => {
+      const batterySize = parseFloat(batteryInput.value);
+      if (!isNaN(batterySize) && batterySize > 0) {
+        kwhInput.max = batterySize;
+      } else {
+         kwhInput.removeAttribute('max'); // Remove max if battery size is invalid
+      }
+      // If kWh input has a value, re-validate it against the new max
+       if (kwhInput.value !== '') {
+           const currentKwh = parseFloat(kwhInput.value);
+            if (!isNaN(currentKwh) && !isNaN(batterySize) && currentKwh > batterySize) {
+                kwhInput.value = batterySize.toFixed(1); // Adjust to max if needed
+            }
+       }
+       // Also potentially adjust initial percentage if kwh is driving it
+       if (kwhInput.disabled === false && percentInput.disabled === true && kwhInput.value !== '') {
+            const currentKwh = parseFloat(kwhInput.value);
+            if (!isNaN(currentKwh) && !isNaN(batterySize) && batterySize > 0) {
+                percentInput.value = ((currentKwh / batterySize) * 100).toFixed(0);
+            }
+       }
+    });
+
+    // Trigger initial setup of max kWh
+    batteryInput.dispatchEvent(new Event('input'));
+
+
+    function toggleInputs(source) {
+      if (source === 'percent') {
+        if (percentInput.value !== '') {
+          kwhInput.disabled = true;
+          kwhInput.value = ''; // Clear the other input
+          kwhInput.style.backgroundColor = '#e9ecef';
+          percentInput.disabled = false;
+          percentInput.style.backgroundColor = '';
+          // Calculate and fill kWh based on percent
+          const batterySize = parseFloat(batteryInput.value);
+          const percentVal = parseFloat(percentInput.value);
+           if (!isNaN(batterySize) && !isNaN(percentVal) && batterySize > 0) {
+               // Temporarily enable to set value, then disable again
+               kwhInput.disabled = false;
+               kwhInput.value = (batterySize * (percentVal / 100)).toFixed(1);
+               kwhInput.disabled = true;
+           }
+
+        } else {
+          // If percent is cleared, enable kWh
+          kwhInput.disabled = false;
+          kwhInput.style.backgroundColor = '';
+        }
+      } else if (source === 'kwh') {
+        if (kwhInput.value !== '') {
+          percentInput.disabled = true;
+          percentInput.value = ''; // Clear the other input
+          percentInput.style.backgroundColor = '#e9ecef';
+          kwhInput.disabled = false;
+          kwhInput.style.backgroundColor = '';
+          // Calculate and fill percent based on kWh
+          const batterySize = parseFloat(batteryInput.value);
+          const kwhVal = parseFloat(kwhInput.value);
+          if (!isNaN(batterySize) && !isNaN(kwhVal) && batterySize > 0) {
+                // Ensure kWh doesn't exceed battery size
+                if(kwhVal > batterySize) {
+                    kwhInput.value = batterySize.toFixed(1);
+                    // Recalculate percentage with capped value
+                     percentInput.disabled = false; // Temporarily enable
+                     percentInput.value = 100;
+                     percentInput.disabled = true;
+                } else {
+                    // Temporarily enable to set value, then disable again
+                    percentInput.disabled = false;
+                    percentInput.value = ((kwhVal / batterySize) * 100).toFixed(0);
+                    percentInput.disabled = true;
+                }
+
+          }
+        } else {
+          // If kWh is cleared, enable percent
+          percentInput.disabled = false;
+          percentInput.style.backgroundColor = '';
+        }
+      }
+    }
+
+    function calculateTime() {
+      // Clear previous timer if running
+      clearInterval(countdown);
+      timerDisplay.innerHTML = '';
+      endTimeDisplay.innerHTML = '';
+      startTimerButton.style.display = 'none'; // Hide timer button initially
+
+      // --- Input Gathering and Validation ---
+      const battery = parseFloat(batteryInput.value);
+      const percent = parseFloat(percentInput.value);
+      const kwh = parseFloat(kwhInput.value);
+      const finalPercent = parseFloat(finalInput.value);
+      let charger = parseFloat(chargerInput.value); // Use let as it might get a default
+
+      if (isNaN(battery) || battery <= 0) {
+        alert("Please enter a valid positive battery size (kWh).");
+        batteryInput.focus();
+        return;
+      }
+
+      // Determine initial kWh, ensuring only one source (percent or kwh) is used
+      let initial_kwh;
+      let initial_percent_calc; // To store the calculated initial percentage if kWh was used
+
+      if (!percentInput.disabled && !isNaN(percent)) { // Use percent if it's enabled and valid
+        if (percent < 0 || percent > 100) {
+          alert("Initial Charge Percentage must be between 0 and 100.");
+          percentInput.focus();
+          return;
+        }
+        initial_kwh = battery * (percent / 100);
+        initial_percent_calc = percent;
+      } else if (!kwhInput.disabled && !isNaN(kwh)) { // Use kWh if it's enabled and valid
+        if (kwh < 0) {
+            alert("Initial Charge kWh cannot be negative.");
+            kwhInput.focus();
+            return;
+        }
+        if (kwh > battery) {
+             alert(`Initial Charge kWh (${kwh.toFixed(1)}) cannot exceed battery size (${battery.toFixed(1)} kWh). It has been adjusted.`);
+             kwhInput.value = battery.toFixed(1); // Correct the input value
+             initial_kwh = battery; // Use the max value
+        } else {
+            initial_kwh = kwh;
+        }
+         initial_percent_calc = (initial_kwh / battery) * 100;
+
+      } else {
+        // Check if *any* initial value was provided if both are enabled (i.e., user hasn't typed in either yet)
+         if (percentInput.disabled === false && kwhInput.disabled === false && isNaN(percent) && isNaN(kwh)) {
+             alert("Please provide either the Initial Charge Percentage or Initial Charge kWh.");
+             percentInput.focus(); // Focus on the first option
+             return;
+         }
+         // If one field was cleared leading to this state, re-enable the other field.
+         else if (isNaN(percent) && !isNaN(kwh)) {
+            percentInput.disabled = false;
+            percentInput.style.backgroundColor = '';
+            alert("Initial percentage was cleared, please re-enter initial charge.");
+            return;
+         } else if (!isNaN(percent) && isNaN(kwh)) {
+             kwhInput.disabled = false;
+             kwhInput.style.backgroundColor = '';
+             alert("Initial kWh was cleared, please re-enter initial charge.");
+             return;
+         } else {
+            // Fallback alert if logic gets complex
+             alert("Please provide a valid Initial Charge Percentage or Initial Charge kWh.");
+            return;
+         }
+      }
+
+
+      if (isNaN(finalPercent) || finalPercent < 0 || finalPercent > 100) {
+        alert("Target Charge Percentage must be between 0 and 100.");
+        finalInput.focus();
+        return;
+      }
+
+       // Ensure target % is not lower than initial %
+       if (finalPercent < initial_percent_calc) {
+            alert(`Target Charge (${finalPercent}%) cannot be lower than Initial Charge (${initial_percent_calc.toFixed(0)}%).`);
+            finalInput.focus();
+            return;
+       }
+
+      if (isNaN(charger) || charger <= 0) {
+         alert("Please enter a valid positive Charger Power (kW). Using default 100 kW.");
+         charger = 100; // Apply default if input is invalid
+         chargerInput.value = 100; // Update the input field
+      }
+
+
+      // --- Calculation ---
+      const final_kwh = battery * (finalPercent / 100);
+      const needed_kwh = final_kwh - initial_kwh;
+
+      if (needed_kwh <= 0) {
+         resultDiv.style.display = 'block';
+         resultDiv.innerHTML = `✅ Already at or above target charge! No charging needed.`;
+         return; // Exit calculation
+      }
+
+      const hours = needed_kwh / charger;
+      estimatedSeconds = Math.round(hours * 60 * 60); // Calculate total seconds
+      const estimatedMinutes = Math.round(hours * 60); // Also keep minutes for display
+
+      // --- Display Results ---
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <strong>📊 Charging Estimate:</strong><br />
+        Battery Size: ${battery.toFixed(1)} kWh<br />
+        Initial Charge: ${initial_kwh.toFixed(1)} kWh (${initial_percent_calc.toFixed(0)}%)<br />
+        Target Charge: ${final_kwh.toFixed(1)} kWh (${finalPercent.toFixed(0)}%)<br />
+        Energy Needed: ${needed_kwh.toFixed(1)} kWh<br />
+        Charger Power: ${charger.toFixed(1)} kW<br />
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5em 0;">
+        <strong>⏱️ Estimated Time: ${estimatedMinutes} minutes</strong>
+        ${estimatedMinutes > 60 ? ` (approx. ${Math.floor(estimatedMinutes / 60)}h ${estimatedMinutes % 60}m)` : ''}
+      `;
+
+      // Show the timer button only if charging is needed
+      if (estimatedSeconds > 0) {
+        startTimerButton.style.display = 'block';
+      }
+    }
+
+    function formatTime(date) {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12; // Handle midnight (0) and noon (12)
+      const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+      return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
+
+    function startTimer() {
+      if (estimatedSeconds <= 0) return; // Don't start if no time calculated
+
+      clearInterval(countdown); // Clear any existing timer first
+      let timeLeft = estimatedSeconds;
+
+      // Calculate and display the end time immediately
+      endTime = new Date();
+      endTime.setSeconds(endTime.getSeconds() + timeLeft);
+      endTimeDisplay.innerHTML = `🏁 Expected completion: ${formatTime(endTime)}`;
+
+      // Start the countdown interval
+      countdown = setInterval(() => {
+        timeLeft--; // Decrement first
+
+        if (timeLeft < 0) { // Check if time is up
+          clearInterval(countdown);
+          timerDisplay.innerHTML = "✅ Charging Complete!";
+          endTimeDisplay.innerHTML = `Finished at ${formatTime(new Date())}`;
+          // Attempt to play sound, handle potential browser restrictions
+           const playPromise = alarmSound.play();
+           if (playPromise !== undefined) {
+             playPromise.catch(error => {
+               console.warn("Audio playback failed. User interaction might be required.", error);
+               // Optionally, provide a visual cue instead
+               timerDisplay.innerHTML = "✅ Charging Complete! (Check sound)";
+             });
+           }
+          return; // Exit interval callback
+        }
+
+        // Calculate remaining hours, minutes, seconds
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
+
+        // Update timer display
+        let timeString = `⏳ `;
+        if (hours > 0) {
+            timeString += `${hours}h `;
+        }
+        timeString += `${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+        timerDisplay.innerHTML = timeString + " remaining";
+
+      }, 1000); // Run every second
+    }
+
+     // Add event listeners to recalculate when inputs change interactively
+    batteryInput.addEventListener('change', calculateTime);
+    percentInput.addEventListener('change', calculateTime);
+    kwhInput.addEventListener('change', calculateTime);
+    finalInput.addEventListener('change', calculateTime);
+    chargerInput.addEventListener('change', calculateTime);
+
+  </script>
+</body>
+</html>
