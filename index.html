@@ -3,169 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EV Tools: Calculator & Converter</title> <!-- Updated Title -->
+  <title>EV Tools: Calculator & Converter</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#007bff">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f8;
-      padding: 2em;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif; background: #f4f6f8; padding: 2em; display: flex;
+      justify-content: center; align-items: flex-start; min-height: 100vh;
     }
     .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-      padding: 2em;
-      max-width: 450px;
-      width: 100%;
-      box-sizing: border-box;
+      background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      padding: 2em; max-width: 450px; width: 100%; box-sizing: border-box;
     }
-    .card h2 { /* Main Title */
-      margin-top: 0;
-      margin-bottom: 1em; /* Reduced margin */
-      text-align: center;
-      color: #333;
-    }
-     /* Tab Styles */
-    .tab-buttons {
-        display: flex;
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 1.5em; /* Space below tabs */
-    }
+    .card h2 { margin-top: 0; margin-bottom: 1em; text-align: center; color: #333; }
+    .tab-buttons { display: flex; border-bottom: 1px solid #ccc; margin-bottom: 1.5em; }
     .tab-button {
-        padding: 0.8em 1.2em;
-        cursor: pointer;
-        border: none;
-        background-color: transparent;
-        border-bottom: 3px solid transparent; /* Placeholder for active border */
-        font-size: 1em;
-        color: #555;
-        transition: color 0.2s ease, border-bottom-color 0.2s ease;
+      padding: 0.8em 1.2em; cursor: pointer; border: none; background-color: transparent;
+      border-bottom: 3px solid transparent; font-size: 1em; color: #555;
+      transition: color 0.2s ease, border-bottom-color 0.2s ease;
     }
-    .tab-button:hover {
-        color: #0056b3;
-    }
-    .tab-button.active {
-        color: #007bff;
-        border-bottom-color: #007bff;
-        font-weight: 600;
-    }
-
-    /* Tab Content Styles */
-    .tab-content {
-        display: none; /* Hide content by default */
-    }
-    .tab-content.active {
-        display: block; /* Show active content */
-    }
-
-    /* General Form Styles (keep as is) */
-    .form-group {
-      margin-bottom: 1.2em;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5em;
-      font-weight: 600;
-      color: #555;
-      font-size: 0.9em;
-    }
+    .tab-button:hover { color: #0056b3; }
+    .tab-button.active { color: #007bff; border-bottom-color: #007bff; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .form-group { margin-bottom: 1.2em; }
+    label { display: block; margin-bottom: 0.5em; font-weight: 600; color: #555; font-size: 0.9em; }
     label[for="configPercent"] { color: #777; }
     input[type="number"], select {
-      width: 100%;
-      padding: 0.8em;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      font-size: 1em;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      width: 100%; padding: 0.8em; border-radius: 8px; border: 1px solid #ccc;
+      box-sizing: border-box; font-size: 1em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
-    input[type="number"]:focus, select:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-      outline: none;
-    }
-    input[type="number"]:disabled, input[type="number"][readonly] {
-        background-color: #e9ecef;
-        cursor: not-allowed;
-        opacity: 0.8;
-    }
-     input[type="number"][readonly] { cursor: default; }
-    .input-row {
-      display: flex;
-      gap: 1em;
-      align-items: flex-end;
-    }
+    input[type="number"]:focus, select:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); outline: none; }
+    input[type="number"]:disabled, input[type="number"][readonly] { background-color: #e9ecef; cursor: not-allowed; opacity: 0.8; }
+    input[type="number"][readonly] { cursor: default; }
+    .input-row { display: flex; gap: 1em; align-items: flex-end; }
     .input-row .form-group { flex: 1; margin-bottom: 0; }
-
-    /* Calculator Specific Styles (if any needed) */
-    #calculator-content button { /* Style button within calculator */
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 0.8em 1.5em;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 1.1em;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1.5em;
+    #calculator-content button {
+      background: #007bff; color: white; border: none; padding: 0.8em 1.5em; border-radius: 8px;
+      width: 100%; font-size: 1.1em; font-weight: 600; cursor: pointer; margin-top: 1.5em;
       transition: background-color 0.2s ease-in-out;
     }
     #calculator-content button:hover { background-color: #0056b3; }
     .result {
-      margin-top: 2em;
-      padding: 1.2em;
-      background: #e9f7ef;
-      border-left: 5px solid #28a745;
-      border-radius: 8px;
-      color: #155724;
-      line-height: 1.6;
+      margin-top: 2em; padding: 1.2em; background: #e9f7ef; border-left: 5px solid #28a745;
+      border-radius: 8px; color: #155724; line-height: 1.6; word-wrap: break-word; /* Prevent long text overflow */
     }
     .result strong { color: #004085; }
-    #startTimer {
-      display: none;
-      margin-top: 1em;
-      background: #28a745;
-    }
+    #startTimer { display: none; margin-top: 1em; background: #28a745; }
     #startTimer:hover { background-color: #1e7e34; }
-    #timerDisplay {
-      font-size: 1.5em;
-      margin-top: 1em;
-      text-align: center;
-      font-weight: bold;
-      color: #333;
-    }
-    #endTimeDisplay {
-      font-size: 1em;
-      margin-top: 0.5em;
-      text-align: center;
-      color: #555;
-    }
-
-    /* Converter Specific Styles */
-    #converter-content h3 { /* Converter title */
-      margin-top: 0; /* Reset top margin as it's inside tab now */
-      margin-bottom: 1em;
-      text-align: center;
-      color: #555;
-      /* border-top: 1px solid #eee; No longer needed */
-      padding-top: 0; /* Reset padding */
-    }
+    #timerDisplay { font-size: 1.5em; margin-top: 1em; text-align: center; font-weight: bold; color: #333; }
+    #endTimeDisplay { font-size: 1em; margin-top: 0.5em; text-align: center; color: #555; }
+    #converter-content h3 { margin-top: 0; margin-bottom: 1em; text-align: center; color: #555; padding-top: 0; }
     #converter-content .form-group { margin-bottom: 0.8em; }
     #converter-content .input-row { margin-bottom: 0.8em; }
     #converter-content .converter-config label { font-size: 0.8em; }
-     #converter-content hr { border: none; border-top: 1px dashed #ccc; margin: 1.5em 0; }
+    #converter-content hr { border: none; border-top: 1px dashed #ccc; margin: 1.5em 0; }
+    #carProfileGroup label { font-weight: bold; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>EV Tools</h2> <!-- More General Title -->
+    <h2>EV Tools</h2>
 
     <!-- Tab Buttons -->
     <div class="tab-buttons">
@@ -176,8 +74,18 @@
     <!-- Tab Content Panels -->
     <div id="calculator-content" class="tab-content active">
         <!-- ===== Calculator Section ===== -->
+
+        <div class="form-group" id="carProfileGroup">
+            <label for="carProfile">Calculation Profile</label>
+            <select id="carProfile">
+                 <option value="e2008" selected>Peugeot e-2008 (54kWh)</option> <!-- Default changed -->
+                 <option value="generic">Generic / Manual Charger Power</option>
+                <!-- Add more car profiles here later -->
+            </select>
+        </div>
+
         <div class="form-group">
-          <label for="battery">Vehicle Battery Size (kWh)</label>
+          <label for="battery" id="batteryLabel">Vehicle Battery Size (kWh)</label>
           <input type="number" id="battery" min="1" value="54" step="0.1" />
         </div>
 
@@ -199,7 +107,7 @@
         </div>
 
         <div class="form-group">
-          <label for="charger">Charger Power (kW)</label>
+          <label for="charger" id="chargerLabel">Charger Power Limit (kW)</label>
           <input type="number" id="charger" min="0.1" step="0.1" placeholder="e.g., 7.4, 11, 50, 100" value="100" />
         </div>
 
@@ -214,57 +122,27 @@
     </div>
 
     <div id="converter-content" class="tab-content">
-        <!-- ===== Converter Section ===== -->
+         <!-- ===== Converter Section (Keep As Is) ===== -->
         <h3>Range / % / kWh Converter</h3>
-
         <p style="font-size: 0.8em; color: #666; margin-top: -1em; margin-bottom: 1em;">Configure your typical full range and the battery size for *this conversion*, then enter any *one* of the current values below.</p>
-
         <div class="converter-config">
              <div class="input-row">
-                <div class="form-group">
-                    <label for="configRange">Typical Range When Full</label>
-                    <input type="number" id="configRange" min="1" value="400" step="1" />
-                </div>
-                 <div class="form-group" style="flex: 0 0 80px;">
-                     <label for="rangeUnit">Units</label>
-                     <select id="rangeUnit">
-                         <option value="km" selected>km</option>
-                         <option value="miles">miles</option>
-                     </select>
-                 </div>
+                <div class="form-group"><label for="configRange">Typical Range When Full</label><input type="number" id="configRange" min="1" value="400" step="1" /></div>
+                 <div class="form-group" style="flex: 0 0 80px;"><label for="rangeUnit">Units</label><select id="rangeUnit"><option value="km" selected>km</option><option value="miles">miles</option></select></div>
              </div>
              <div class="input-row">
-                 <div class="form-group">
-                    <label for="configCapacity">Reference Battery Size (kWh)</label>
-                    <input type="number" id="configCapacity" value="54" min="1" step="0.1" />
-                 </div>
-                 <div class="form-group" style="display: none;">
-                    <label for="configPercent">Corresponding to (%)</label>
-                    <input type="number" id="configPercent" value="100" min="1" max="100" step="1" readonly/>
-                 </div>
+                 <div class="form-group"><label for="configCapacity">Reference Battery Size (kWh)</label><input type="number" id="configCapacity" value="54" min="1" step="0.1" /></div>
+                 <div class="form-group" style="display: none;"><label for="configPercent">Corresponding to (%)</label><input type="number" id="configPercent" value="100" min="1" max="100" step="1" readonly/></div>
             </div>
         </div>
-
         <hr>
-
-        <div class="form-group">
-            <label for="currentRange">Current Range (<span class="unit-label">km</span>)</label>
-            <input type="number" id="currentRange" min="0" step="1" placeholder="e.g., 250" oninput="updateConverterValues('range')" />
-        </div>
-        <div class="form-group">
-            <label for="currentPercent">Current Percentage (%)</label>
-            <input type="number" id="currentPercent" min="0" max="100" step="1" placeholder="e.g., 60" oninput="updateConverterValues('percent')" />
-        </div>
-        <div class="form-group">
-            <label for="currentKwh">Current Capacity (kWh)</label>
-            <input type="number" id="currentKwh" min="0" step="0.1" placeholder="e.g., 32.4" oninput="updateConverterValues('kwh')" />
-        </div>
+        <div class="form-group"><label for="currentRange">Current Range (<span class="unit-label">km</span>)</label><input type="number" id="currentRange" min="0" step="1" placeholder="e.g., 250" oninput="updateConverterValues('range')" /></div>
+        <div class="form-group"><label for="currentPercent">Current Percentage (%)</label><input type="number" id="currentPercent" min="0" max="100" step="1" placeholder="e.g., 60" oninput="updateConverterValues('percent')" /></div>
+        <div class="form-group"><label for="currentKwh">Current Capacity (kWh)</label><input type="number" id="currentKwh" min="0" step="0.1" placeholder="e.g., 32.4" oninput="updateConverterValues('kwh')" /></div>
         <!-- ===== End Converter Section ===== -->
     </div>
 
-    <!-- Shared Elements (like audio) can remain outside tabs -->
     <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
-
   </div> <!-- End Card -->
 
   <script>
@@ -275,29 +153,200 @@
     // === Tab Switching Logic ===
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const targetTab = button.dataset.tabTarget; // e.g., "#calculator-content"
-
-            // Deactivate all tabs and content
+            const targetTab = button.dataset.tabTarget;
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
-
-            // Activate the clicked tab and its content
             button.classList.add('active');
             document.querySelector(targetTab).classList.add('active');
         });
     });
 
+    // === Charging Curve Data ===
+    const chargingCurves = {
+        e2008: {
+            batteryKwh: 54,
+            dataString: `SOC,Speed,Time,Energy charged
+0%,50 kW,00:00:00,0 kWh
+1%,55 kW,00:00:37,0.5 kWh
+2%,60 kW,00:01:11,1.0 kWh
+3%,65 kW,00:01:43,1.5 kWh
+4%,70 kW,00:02:12,2.0 kWh
+5%,75 kW,00:02:39,2.5 kWh
+6%,80 kW,00:03:04,3.0 kWh
+7%,85 kW,00:03:28,3.6 kWh
+8%,90 kW,00:03:51,4.1 kWh
+9%,95 kW,00:04:12,4.6 kWh
+10%,100 kW,00:04:32,5.1 kWh
+11%,100 kW,00:04:52,5.6 kWh
+12%,100 kW,00:05:11,6.1 kWh
+13%,100 kW,00:05:31,6.6 kWh
+14%,100 kW,00:05:51,7.1 kWh
+15%,100 kW,00:06:10,7.6 kWh
+16%,100 kW,00:06:30,8.1 kWh
+17%,100 kW,00:06:50,8.6 kWh
+18%,100 kW,00:07:09,9.1 kWh
+19%,98 kW,00:07:29,9.7 kWh
+20%,97 kW,00:07:49,10.2 kWh
+21%,97 kW,00:08:09,10.7 kWh
+22%,97 kW,00:08:30,11.2 kWh
+23%,97 kW,00:08:50,11.7 kWh
+24%,97 kW,00:09:10,12.2 kWh
+25%,98 kW,00:09:30,12.7 kWh
+26%,98 kW,00:09:50,13.2 kWh
+27%,98 kW,00:10:11,13.7 kWh
+28%,98 kW,00:10:31,14.2 kWh
+29%,98 kW,00:10:51,14.7 kWh
+30%,98 kW,00:11:11,15.2 kWh
+31%,89 kW,00:11:32,15.7 kWh
+32%,80 kW,00:11:55,16.3 kWh
+33%,80 kW,00:12:20,16.8 kWh
+34%,80 kW,00:12:44,17.3 kWh
+35%,80 kW,00:13:09,17.8 kWh
+36%,81 kW,00:13:33,18.3 kWh
+37%,81 kW,00:13:58,18.8 kWh
+38%,81 kW,00:14:22,19.3 kWh
+39%,81 kW,00:14:46,19.8 kWh
+40%,81 kW,00:15:11,20.3 kWh
+41%,81 kW,00:15:35,20.8 kWh
+42%,81 kW,00:15:59,21.3 kWh
+43%,81 kW,00:16:23,21.8 kWh
+44%,82 kW,00:16:47,22.4 kWh
+45%,82 kW,00:17:11,22.9 kWh
+46%,82 kW,00:17:35,23.4 kWh
+47%,82 kW,00:17:59,23.9 kWh
+48%,82 kW,00:18:23,24.4 kWh
+49%,82 kW,00:18:47,24.9 kWh
+50%,82 kW,00:19:11,25.4 kWh
+51%,82 kW,00:19:35,25.9 kWh
+52%,83 kW,00:19:59,26.4 kWh
+53%,83 kW,00:20:23,26.9 kWh
+54%,83 kW,00:20:47,27.4 kWh
+55%,83 kW,00:21:10,27.9 kWh
+56%,77 kW,00:21:35,28.4 kWh
+57%,71 kW,00:22:01,29.0 kWh
+58%,65 kW,00:22:30,29.5 kWh
+59%,65 kW,00:23:01,30.0 kWh
+60%,65 kW,00:23:31,30.5 kWh
+61%,65 kW,00:24:01,31.0 kWh
+62%,65 kW,00:24:31,31.5 kWh
+63%,65 kW,00:25:02,32.0 kWh
+64%,65 kW,00:25:32,32.5 kWh
+65%,65 kW,00:26:02,33.0 kWh
+66%,65 kW,00:26:32,33.5 kWh
+67%,65 kW,00:27:03,34.0 kWh
+68%,65 kW,00:27:33,34.5 kWh
+69%,65 kW,00:28:03,35.1 kWh
+70%,65 kW,00:28:33,35.6 kWh
+71%,65 kW,00:29:04,36.1 kWh
+72%,65 kW,00:29:34,36.6 kWh
+73%,65 kW,00:30:04,37.1 kWh
+74%,65 kW,00:30:34,37.6 kWh
+75%,65 kW,00:31:05,38.1 kWh
+76%,65 kW,00:31:35,38.6 kWh
+77%,65 kW,00:32:05,39.1 kWh
+78%,65 kW,00:32:35,39.6 kWh
+79%,48 kW,00:33:10,40.1 kWh
+80%,30 kW,00:34:01,40.6 kWh
+81%,30 kW,00:35:07,41.1 kWh
+82%,30 kW,00:36:12,41.7 kWh
+83%,30 kW,00:37:18,42.2 kWh
+84%,30 kW,00:38:23,42.7 kWh
+85%,30 kW,00:39:29,43.2 kWh
+86%,30 kW,00:40:34,43.7 kWh
+87%,30 kW,00:41:40,44.2 kWh
+88%,30 kW,00:42:45,44.7 kWh
+89%,30 kW,00:43:51,45.2 kWh
+90%,30 kW,00:44:57,45.7 kWh
+91%,29 kW,00:46:03,46.2 kWh
+92%,28 kW,00:47:12,46.7 kWh
+93%,27 kW,00:48:24,47.2 kWh
+94%,26 kW,00:49:38,47.8 kWh
+95%,25 kW,00:50:55,48.3 kWh
+96%,24 kW,00:52:15,48.8 kWh
+97%,23 kW,00:53:39,49.3 kWh
+98%,22 kW,00:55:06,49.8 kWh
+99%,21 kW,00:56:38,50.3 kWh
+100%,20 kW,00:58:14,50.8 kWh`,
+            parsedData: null
+        }
+    };
+
+    // --- Function to parse HH:MM:SS to seconds ---
+    function parseTimeStringToSeconds(timeString) {
+        if (!timeString || typeof timeString !== 'string') return 0;
+        const parts = timeString.split(':'); if (parts.length !== 3) return 0;
+        const hours = parseInt(parts[0], 10); const minutes = parseInt(parts[1], 10); const seconds = parseInt(parts[2], 10);
+        if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) return 0;
+        return hours * 3600 + minutes * 60 + seconds;
+     }
+
+    // --- REVISED: Function to parse the raw curve data string ---
+    function parseCurveData(dataString) {
+        const lines = dataString.trim().split('\n');
+        const curve = [];
+        if (lines.length < 2) return curve; // Need header and at least one data line
+
+        const header = lines[0].trim(); // Optional: could validate header later
+
+        for (let i = 1; i < lines.length; i++) { // Start from 1 to skip header
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            // Split primarily by comma, then trim whitespace from each part
+            const parts = line.split(',').map(part => part.trim());
+
+            // Expecting 4 main comma-separated parts
+            if (parts.length !== 4) {
+                 console.warn(`Skipping curve line due to unexpected part count (${parts.length}):`, line);
+                 continue; // Skip lines that don't have exactly 4 comma-separated values
+            }
+
+            try {
+                // Part 0: SOC
+                const soc = parseFloat(parts[0].replace('%', ''));
+
+                // Part 1: Speed (remove unit)
+                const speed = parseFloat(parts[1].replace(/kW/i, '').trim()); // Case-insensitive replace
+
+                // Part 2: Time
+                const timeSeconds = parseTimeStringToSeconds(parts[2]);
+
+                // Part 3: Energy (remove unit)
+                const energy = parseFloat(parts[3].replace(/kWh/i, '').trim()); // Case-insensitive replace
+
+
+                if (!isNaN(soc) && !isNaN(speed) && !isNaN(energy)) {
+                    curve.push({ soc, speed, timeSeconds, energy });
+                } else {
+                     console.warn(`NaN value encountered while parsing line:`, line, {soc, speed, timeSeconds, energy});
+                }
+            } catch (e) {
+                console.error("Error parsing curve data line:", line, e);
+            }
+        }
+        // console.log(`Parsed curve data length: ${curve.length}`); // DEBUG: Verify length after parsing
+        return curve;
+    }
+
+
+     // --- Pre-parse all available curve data ---
+    for (const profileKey in chargingCurves) {
+        if (chargingCurves.hasOwnProperty(profileKey)) { // Good practice check
+            // console.log(`Parsing data for profile: ${profileKey}`); // DEBUG: Confirm parsing attempt
+             chargingCurves[profileKey].parsedData = parseCurveData(chargingCurves[profileKey].dataString);
+        }
+    }
 
     // === Original Calculator Variables ===
-    let countdown;
-    let endTime;
-    let estimatedSeconds = 0;
-
+    let countdown; let endTime; let estimatedSeconds = 0;
+    const carProfileSelect = document.getElementById('carProfile');
     const batteryInput = document.getElementById('battery');
+    const batteryLabel = document.getElementById('batteryLabel');
     const percentInput = document.getElementById('percent');
     const kwhInput = document.getElementById('kwh');
     const finalInput = document.getElementById('final');
     const chargerInput = document.getElementById('charger');
+    const chargerLabel = document.getElementById('chargerLabel');
     const resultDiv = document.getElementById('result');
     const startTimerButton = document.getElementById('startTimer');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -316,6 +365,19 @@
 
 
     // === Initialization and Event Listeners (Original Calculator) ===
+    carProfileSelect.addEventListener('change', () => {
+        const selectedProfile = carProfileSelect.value;
+        if (selectedProfile === 'generic') {
+            batteryInput.readOnly = false; batteryInput.style.cursor = '';
+            batteryLabel.textContent = 'Vehicle Battery Size (kWh)'; chargerLabel.textContent = 'Charger Power (kW)';
+        } else if (chargingCurves[selectedProfile]) {
+            const curveInfo = chargingCurves[selectedProfile]; batteryInput.value = curveInfo.batteryKwh;
+            batteryInput.readOnly = true; batteryInput.style.cursor = 'not-allowed';
+            batteryLabel.textContent = 'Vehicle Battery Size (kWh) (Profile)'; chargerLabel.textContent = 'Charger Power Limit (kW)';
+            updateCalculatorCapacityLimits(); // Trigger update
+        }
+     });
+
     function updateCalculatorCapacityLimits() {
         const batterySize = parseFloat(batteryInput.value);
          if (!isNaN(batterySize) && batterySize > 0) {
@@ -337,7 +399,7 @@
     }
     batteryInput.addEventListener('input', updateCalculatorCapacityLimits);
 
-    function toggleInputs(source) { /* ... Keep previous toggleInputs logic ... */
+    function toggleInputs(source) {
         if (source === 'percent') {
             if (percentInput.value !== '') {
                 kwhInput.disabled = true; kwhInput.value = ''; kwhInput.style.backgroundColor = '#e9ecef';
@@ -362,46 +424,242 @@
                 }
             } else { percentInput.disabled = false; percentInput.style.backgroundColor = ''; }
         }
+     }
+
+    // === REVISED: Curve Calculation Helper - Time between two SOCs ===
+    function getTimeBetweenSOCs_Simulated(curve, startSOC, endSOC, chargerLimitKw, batteryCapacity) {
+        if (!curve || curve.length < 2 || startSOC >= endSOC || startSOC < 0 || endSOC > 100) {
+            // console.log("Curve time invalid input:", { startSOC, endSOC }); // DEBUG
+            return 0;
+        }
+
+        let accumulatedTimeSeconds = 0;
+        let currentSimSOC = startSOC;
+
+        // Find the starting point in the curve data more precisely
+        let startIndex = 0;
+        while (startIndex < curve.length - 1 && curve[startIndex + 1].soc <= startSOC) {
+            startIndex++;
+        }
+        // console.log(`Starting simulation check from curve index ${startIndex} (SOC ${curve[startIndex].soc}%)`); // DEBUG
+
+        for (let i = startIndex; i < curve.length - 1; i++) {
+            const p1 = curve[i];
+            const p2 = curve[i + 1];
+
+            const segmentStartSOC = p1.soc;
+            const segmentEndSOC = p2.soc;
+            const segmentStartEnergy = p1.energy;
+            const segmentEndEnergy = p2.energy;
+
+            // Skip segments entirely before our actual startSOC if start wasn't exact
+            if (segmentEndSOC <= startSOC) continue;
+
+            // Effective speed for this segment (use speed at segment start, limited by charger)
+            const effectiveSpeedKw = Math.min(p1.speed, chargerLimitKw);
+            if (effectiveSpeedKw <= 0) continue; // Skip if no power
+
+            // Determine the SOC range to simulate *within this segment*
+            const socStartInSegment = Math.max(segmentStartSOC, currentSimSOC); // Actual start for this step
+            const socEndInSegment = Math.min(segmentEndSOC, endSOC);         // Actual end for this step
+
+            if (socStartInSegment >= socEndInSegment) {
+                 // This can happen if startSOC or endSOC is exactly on a point
+                 // or if we've already reached the endSOC in a previous iteration.
+                 // console.log(`Skipping segment ${i}: start ${socStartInSegment.toFixed(1)} >= end ${socEndInSegment.toFixed(1)}`); // DEBUG
+                 if(currentSimSOC >= endSOC) break; // Ensure we exit if target reached
+                 continue;
+            }
+
+             // Calculate energy added *within the relevant portion* of this segment using linear interpolation
+             const fullSegmentSocRange = segmentEndSOC - segmentStartSOC;
+             const fullSegmentEnergyRange = segmentEndEnergy - segmentStartEnergy;
+             let energyAddedThisStep = 0;
+
+             if (fullSegmentSocRange > 0) {
+                 // Energy at socStartInSegment (interpolated)
+                 const startFraction = (socStartInSegment - segmentStartSOC) / fullSegmentSocRange;
+                 const energyAtStartInSegment = segmentStartEnergy + (startFraction * fullSegmentEnergyRange);
+
+                 // Energy at socEndInSegment (interpolated)
+                 const endFraction = (socEndInSegment - segmentStartSOC) / fullSegmentSocRange;
+                 const energyAtEndInSegment = segmentStartEnergy + (endFraction * fullSegmentEnergyRange);
+
+                 energyAddedThisStep = energyAtEndInSegment - energyAtStartInSegment;
+             } else {
+                // If SOC doesn't change but energy might (unlikely in good data), handle gracefully
+                energyAddedThisStep = 0;
+             }
+
+            if (energyAddedThisStep < 0) energyAddedThisStep = 0; // Sanity check
+
+            // Calculate time for this step: time(s) = (kWh / kW) * 3600
+            const timeDeltaSeconds = (energyAddedThisStep / effectiveSpeedKw) * 3600;
+
+            // console.log(`Segment ${i} (${segmentStartSOC}%-${segmentEndSOC}%): Sim ${socStartInSegment.toFixed(1)}%->${socEndInSegment.toFixed(1)}%. E:${energyAddedThisStep.toFixed(2)}kWh @${effectiveSpeedKw}kW -> ${timeDeltaSeconds.toFixed(0)}s`); // DEBUG
+
+            accumulatedTimeSeconds += timeDeltaSeconds;
+            currentSimSOC = socEndInSegment; // Update current simulated SOC
+
+            // If we've reached or passed the target endSOC, break
+            if (currentSimSOC >= endSOC) {
+                // console.log(`Target SOC ${endSOC}% reached.`); // DEBUG
+                break;
+            }
+        }
+         // Handle cases where endSOC is exactly 100 and loop finished slightly before due to interpolation points
+        if (endSOC === 100 && currentSimSOC < 100 && curve.length > 0) {
+            const lastPoint = curve[curve.length - 1];
+            const secondLastPoint = curve[curve.length - 2];
+             if (lastPoint.soc === 100 && secondLastPoint.soc < 100) {
+                  // Add time for the last small bit if needed and missed
+                  const socStartInSegment = Math.max(secondLastPoint.soc, currentSimSOC);
+                  const socEndInSegment = 100;
+                  if (socStartInSegment < socEndInSegment) {
+                      const effectiveSpeedKw = Math.min(secondLastPoint.speed, chargerLimitKw);
+                      if(effectiveSpeedKw > 0) {
+                            const fullSegmentSocRange = lastPoint.soc - secondLastPoint.soc;
+                            const fullSegmentEnergyRange = lastPoint.energy - secondLastPoint.energy;
+                             let energyAddedThisStep = 0;
+                             if(fullSegmentSocRange > 0) {
+                                  const startFraction = (socStartInSegment - secondLastPoint.soc) / fullSegmentSocRange;
+                                  const energyAtStartInSegment = secondLastPoint.energy + (startFraction * fullSegmentEnergyRange);
+                                  energyAddedThisStep = lastPoint.energy - energyAtStartInSegment;
+                             }
+                             if (energyAddedThisStep > 0) {
+                                  const timeDeltaSeconds = (energyAddedThisStep / effectiveSpeedKw) * 3600;
+                                  accumulatedTimeSeconds += timeDeltaSeconds;
+                                  // console.log(`Adding final bit to 100%: ${timeDeltaSeconds.toFixed(0)}s`); // DEBUG
+                             }
+                      }
+                  }
+             }
+        }
+
+
+        return Math.round(accumulatedTimeSeconds); // Return total time in seconds
     }
 
-    function calculateTime() { /* ... Keep previous calculateTime logic ... */
-        clearInterval(countdown); timerDisplay.innerHTML = ''; endTimeDisplay.innerHTML = ''; startTimerButton.style.display = 'none';
-        const battery = parseFloat(batteryInput.value); const percent = parseFloat(percentInput.value); const kwh = parseFloat(kwhInput.value); const finalPercent = parseFloat(finalInput.value); let charger = parseFloat(chargerInput.value);
-        if (isNaN(battery) || battery <= 0) { alert("Please enter a valid positive Vehicle Battery Size (kWh) for the calculator."); batteryInput.focus(); return; }
-        let initial_kwh; let initial_percent_calc;
-        if (!percentInput.disabled && !isNaN(percent)) { if (percent < 0 || percent > 100) { alert("Initial Charge Percentage must be between 0 and 100."); percentInput.focus(); return; } initial_kwh = battery * (percent / 100); initial_percent_calc = percent; }
-        else if (!kwhInput.disabled && !isNaN(kwh)) { if (kwh < 0) { alert("Initial Charge kWh cannot be negative."); kwhInput.focus(); return; } if (kwh > battery) { alert(`Initial Charge kWh (${kwh.toFixed(1)}) cannot exceed vehicle battery size (${battery.toFixed(1)} kWh). It has been adjusted.`); kwhInput.value = battery.toFixed(1); initial_kwh = battery; } else { initial_kwh = kwh; } initial_percent_calc = (initial_kwh / battery) * 100; }
-        else { if (percentInput.disabled === false && kwhInput.disabled === false && isNaN(percent) && isNaN(kwh)) { alert("Please provide either the Initial Charge Percentage or Initial Charge kWh."); percentInput.focus(); return; } else if (isNaN(percent) && !isNaN(kwh)) { percentInput.disabled = false; percentInput.style.backgroundColor = ''; alert("Initial percentage was cleared, please re-enter initial charge."); return; } else if (!isNaN(percent) && isNaN(kwh)) { kwhInput.disabled = false; kwhInput.style.backgroundColor = ''; alert("Initial kWh was cleared, please re-enter initial charge."); return; } else { alert("Please provide a valid Initial Charge Percentage or Initial Charge kWh."); return; } }
-        if (isNaN(finalPercent) || finalPercent < 0 || finalPercent > 100) { alert("Target Charge Percentage must be between 0 and 100."); finalInput.focus(); return; }
-        if (finalPercent < initial_percent_calc) { alert(`Target Charge (${finalPercent}%) cannot be lower than Initial Charge (${initial_percent_calc.toFixed(0)}%).`); finalInput.focus(); return; }
-        if (isNaN(charger) || charger <= 0) { alert("Please enter a valid positive Charger Power (kW). Using default 100 kW."); charger = 100; chargerInput.value = 100; }
-        const final_kwh = battery * (finalPercent / 100); const needed_kwh = final_kwh - initial_kwh;
-        if (needed_kwh <= 0) { resultDiv.style.display = 'block'; resultDiv.innerHTML = `✅ Already at or above target charge! No charging needed.`; return; }
-        const hours = needed_kwh / charger; estimatedSeconds = Math.round(hours * 60 * 60); const estimatedMinutes = Math.round(hours * 60);
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `<strong>📊 Charging Estimate:</strong><br />Vehicle Battery Size: ${battery.toFixed(1)} kWh<br />Initial Charge: ${initial_kwh.toFixed(1)} kWh (${initial_percent_calc.toFixed(0)}%)<br />Target Charge: ${final_kwh.toFixed(1)} kWh (${finalPercent.toFixed(0)}%)<br />Energy Needed: ${needed_kwh.toFixed(1)} kWh<br />Charger Power: ${charger.toFixed(1)} kW<br /><hr style="border: none; border-top: 1px solid #ccc; margin: 0.5em 0;"><strong>⏱️ Estimated Time: ${estimatedMinutes} minutes</strong>${estimatedMinutes > 60 ? ` (approx. ${Math.floor(estimatedMinutes / 60)}h ${estimatedMinutes % 60}m)` : ''}`;
-        if (estimatedSeconds > 0) { startTimerButton.style.display = 'block'; }
+
+    function calculateTime() {
+      clearInterval(countdown); timerDisplay.innerHTML = ''; endTimeDisplay.innerHTML = ''; startTimerButton.style.display = 'none'; resultDiv.style.display = 'none'; // Hide result initially
+
+      const selectedProfileKey = carProfileSelect.value;
+      const battery = parseFloat(batteryInput.value);
+      const percent = parseFloat(percentInput.value);
+      const kwh = parseFloat(kwhInput.value);
+      const finalPercent = parseFloat(finalInput.value);
+      let chargerLimit = parseFloat(chargerInput.value);
+
+      let calculationMethod = "Generic"; // Default
+
+      // --- Validation ---
+      if (isNaN(battery) || battery <= 0) { alert("Please enter or select a valid positive Vehicle Battery Size (kWh)."); batteryInput.focus(); return; }
+      if (isNaN(finalPercent) || finalPercent <= 0 || finalPercent > 100) { alert("Target Charge Percentage must be between 1 and 100."); finalInput.focus(); return; } // Target must be > 0
+      if (isNaN(chargerLimit) || chargerLimit <= 0) { alert("Please enter a valid positive Charger Power Limit (kW)."); chargerInput.focus(); return; }
+
+      // --- Determine Initial State ---
+      let initial_kwh;
+      let initial_percent_calc; // Use Math.max to ensure initial % is at least 0
+      if (!percentInput.disabled && !isNaN(percent)) {
+        if (percent < 0 || percent > 100) { alert("Initial Charge Percentage must be between 0 and 100."); percentInput.focus(); return; }
+        initial_percent_calc = Math.max(0, percent); // Ensure >= 0
+        initial_kwh = battery * (initial_percent_calc / 100);
+      } else if (!kwhInput.disabled && !isNaN(kwh)) {
+        if (kwh < 0) { alert("Initial Charge kWh cannot be negative."); kwhInput.focus(); return; }
+        if (kwh > battery) { alert(`Initial Charge kWh (${kwh.toFixed(1)}) cannot exceed vehicle battery size (${battery.toFixed(1)} kWh). It has been adjusted.`); kwhInput.value = battery.toFixed(1); initial_kwh = battery; }
+        else { initial_kwh = kwh; }
+        // Calculate percentage from kWh, ensure it's not negative and use toFixed(1) for better precision check
+        initial_percent_calc = Math.max(0, parseFloat(((initial_kwh / battery) * 100).toFixed(1)));
+      } else {
+        if (percentInput.disabled === false && kwhInput.disabled === false && isNaN(percent) && isNaN(kwh)) { alert("Please provide either the Initial Charge Percentage or Initial Charge kWh."); percentInput.focus(); return; }
+        else if (isNaN(percent) && !isNaN(kwh)) { percentInput.disabled = false; percentInput.style.backgroundColor = ''; alert("Initial percentage was cleared, please re-enter initial charge."); return; }
+        else if (!isNaN(percent) && isNaN(kwh)) { kwhInput.disabled = false; kwhInput.style.backgroundColor = ''; alert("Initial kWh was cleared, please re-enter initial charge."); return; }
+        else { alert("Please provide a valid Initial Charge Percentage or Initial Charge kWh."); return; }
+      }
+
+       // Ensure initial percentage is not higher than final percentage
+       if (finalPercent <= initial_percent_calc) {
+            resultDiv.style.display = 'block'; resultDiv.innerHTML = `✅ Already at or above target charge (${finalPercent}%)! No charging needed.`; return;
+       }
+
+      // --- Calculate Time ---
+      let totalTimeSeconds = 0;
+      if (selectedProfileKey !== 'generic' && chargingCurves[selectedProfileKey]?.parsedData) {
+          // --- Use Curve Data ---
+          calculationMethod = `Curve (${selectedProfileKey})`;
+          const curveInfo = chargingCurves[selectedProfileKey];
+          const curveData = curveInfo.parsedData; // Get the potentially parsed data
+          const curveBatteryCapacity = curveInfo.batteryKwh;
+
+          // DEBUG: Log the data being used
+          // console.log(`Using curve data for ${selectedProfileKey}:`, curveData);
+
+          // Check for sufficient data points *after* retrieving curveData
+          if (!curveData || curveData.length < 2) {
+               alert(`Error: Insufficient data points found after parsing the charging curve for ${selectedProfileKey}. Check console for details.`);
+               console.error(`Parsed curve data for ${selectedProfileKey} is invalid or too short:`, curveData);
+               return; // Stop calculation
+          }
+
+          if (Math.abs(battery - curveBatteryCapacity) > 1) {
+              alert(`Warning: Selected battery size (${battery} kWh) differs significantly from the ${selectedProfileKey} profile's (${curveBatteryCapacity} kWh). Calculations use the profile's curve.`);
+          }
+
+          // Use the new function to calculate time between the specific SOCs
+          totalTimeSeconds = getTimeBetweenSOCs_Simulated(curveData, initial_percent_calc, finalPercent, chargerLimit, curveBatteryCapacity);
+
+      } else if (selectedProfileKey !== 'generic') {
+             // Handle case where profile exists but data failed parsing earlier
+             alert(`Error: Could not find or use parsed charging curve data for ${selectedProfileKey}. Check console logs from page load.`);
+             return;
+        } else {
+          // --- Use Generic Linear Calculation ---
+          calculationMethod = "Generic";
+          const final_kwh = battery * (finalPercent / 100);
+          const needed_kwh = final_kwh - initial_kwh;
+          const hours = needed_kwh / chargerLimit;
+          totalTimeSeconds = Math.round(hours * 3600);
+      }
+
+      estimatedSeconds = totalTimeSeconds; // Store for timer
+      const estimatedMinutes = Math.round(estimatedSeconds / 60);
+
+      // --- Display Results ---
+      const final_kwh_display = battery * (finalPercent / 100);
+
+      resultDiv.style.display = 'block'; // Show result div
+      resultDiv.innerHTML = `
+        <strong>📊 Charging Estimate (${calculationMethod}):</strong><br />
+        Vehicle Battery Size: ${battery.toFixed(1)} kWh<br />
+        Initial Charge: ${initial_kwh.toFixed(1)} kWh (${initial_percent_calc.toFixed(1)}%)<br /> <!-- Show decimal for initial % -->
+        Target Charge: ${final_kwh_display.toFixed(1)} kWh (${finalPercent.toFixed(0)}%)<br />
+        ${calculationMethod === 'Generic' ? `Energy Needed: ${(final_kwh_display - initial_kwh).toFixed(1)} kWh<br />` : ''}
+        Charger Limit: ${chargerLimit.toFixed(1)} kW<br />
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5em 0;">
+        <strong>⏱️ Estimated Time: ${estimatedMinutes} minutes</strong>
+        ${estimatedMinutes > 60 ? ` (approx. ${Math.floor(estimatedMinutes / 60)}h ${estimatedMinutes % 60}m)` : ''}
+      `;
+
+      if (estimatedSeconds > 0) { startTimerButton.style.display = 'block'; }
+      else { startTimerButton.style.display = 'none'; }
     }
 
-    function formatTime(date) { /* ... Keep previous formatTime logic ... */
+    // --- Other functions (formatTime, startTimer, converter functions, etc.) ---
+    function formatTime(date) {
         const hours = date.getHours(); const minutes = date.getMinutes(); const ampm = hours >= 12 ? 'PM' : 'AM'; const formattedHours = hours % 12 || 12; const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; return `${formattedHours}:${formattedMinutes} ${ampm}`;
     }
-
-    function startTimer() { /* ... Keep previous startTimer logic ... */
+    function startTimer() {
         if (estimatedSeconds <= 0) return; clearInterval(countdown); let timeLeft = estimatedSeconds; endTime = new Date(); endTime.setSeconds(endTime.getSeconds() + timeLeft); endTimeDisplay.innerHTML = `🏁 Expected completion: ${formatTime(endTime)}`;
         countdown = setInterval(() => { timeLeft--; if (timeLeft < 0) { clearInterval(countdown); timerDisplay.innerHTML = "✅ Charging Complete!"; endTimeDisplay.innerHTML = `Finished at ${formatTime(new Date())}`; const playPromise = alarmSound.play(); if (playPromise !== undefined) { playPromise.catch(error => { console.warn("Audio playback failed.", error); timerDisplay.innerHTML = "✅ Charging Complete! (Check sound)"; }); } return; } const hours = Math.floor(timeLeft / 3600); const minutes = Math.floor((timeLeft % 3600) / 60); const seconds = timeLeft % 60; let timeString = `⏳ `; if (hours > 0) { timeString += `${hours}h `; } timeString += `${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`; timerDisplay.innerHTML = timeString + " remaining"; }, 1000);
-    }
-
-    // === Converter Functions ===
-    function updateUnitLabels() { /* ... Keep previous updateUnitLabels logic ... */
+     }
+    function updateUnitLabels() {
          const selectedUnit = rangeUnitSelect.value; unitLabels.forEach(label => { label.textContent = selectedUnit; });
-    }
-
-    function debounce(func, wait) { /* ... Keep previous debounce logic ... */
+     }
+    function debounce(func, wait) {
         let timeout; return function executedFunction(...args) { const later = () => { clearTimeout(timeout); func(...args); }; clearTimeout(timeout); timeout = setTimeout(later, wait); };
-    }
-
-    const debouncedUpdate = debounce(function(source) { /* ... Keep previous debouncedUpdate logic ... */
+     }
+    const debouncedUpdate = debounce(function(source) {
         const configRange = parseFloat(configRangeInput.value); const configCapacity = parseFloat(configCapacityInput.value); const configPercent = parseFloat(configPercentInput.value);
         if (isNaN(configRange) || configRange <= 0 || isNaN(configCapacity) || configCapacity <= 0 || isNaN(configPercent) || configPercent <= 0) { console.warn("Converter configuration invalid."); return; }
         const currentRange = parseFloat(currentRangeInput.value); const currentPercent = parseFloat(currentPercentInput.value); const currentKwh = parseFloat(currentKwhInput.value);
@@ -415,17 +673,14 @@
             if (source !== 'percent') { currentPercentInput.value = calculatedPercent >= 0 ? calculatedPercent.toFixed(0) : ''; if (parseFloat(currentPercentInput.value) > 100) currentPercentInput.value = 100; }
             if (source !== 'kwh') { currentKwhInput.value = calculatedKwh >= 0 ? calculatedKwh.toFixed(1) : ''; }
         } catch (error) { console.error("Error during conversion calculation:", error); }
-    }, 250);
-
+     }, 250);
     function updateConverterValues(source) { debouncedUpdate(source); }
-
-    function handleConverterConfigChange() { /* ... Keep previous handleConverterConfigChange logic ... */
+    function handleConverterConfigChange() {
         const configCapacity = parseFloat(configCapacityInput.value);
         if (!isNaN(configCapacity) && configCapacity > 0) { currentKwhInput.max = configCapacity.toFixed(1); if (currentKwhInput.value !== '') { const currentKwhVal = parseFloat(currentKwhInput.value); if (!isNaN(currentKwhVal) && currentKwhVal > configCapacity) { currentKwhInput.value = configCapacity.toFixed(1); } } }
         else { currentKwhInput.removeAttribute('max'); }
         currentRangeInput.value = ''; currentPercentInput.value = ''; currentKwhInput.value = '';
-    }
-
+     }
     // === Event Listeners (Converter) ===
     rangeUnitSelect.addEventListener('change', updateUnitLabels);
     configRangeInput.addEventListener('input', handleConverterConfigChange);
@@ -435,15 +690,14 @@
     updateCalculatorCapacityLimits();
     handleConverterConfigChange();
     updateUnitLabels();
+    carProfileSelect.dispatchEvent(new Event('change')); // Trigger profile change handler on load
 
-     // === PWA Service Worker Registration ===
-    if ('serviceWorker' in navigator) { /* ... Keep previous PWA registration logic ... */
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => { console.log('SW registered: ', registration.scope); })
-          .catch(error => { console.log('SW registration failed: ', error); });
-      });
-    }
+    // === PWA Service Worker Registration ===
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered.', reg.scope)).catch(err => console.log('SW reg failed:', err));
+        });
+     }
 
   </script>
 </body>
